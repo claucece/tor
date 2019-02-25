@@ -309,6 +309,9 @@ log_prefix_(char *buf, size_t buf_len, int severity)
 
   n = strftime(buf, buf_len, "%b %d %H:%M:%S",
                tor_localtime_r_msg(&t, &tm, NULL));
+  if (n == 0 && buf[0] != '\0')
+      return -1;
+
   r = tor_snprintf(buf+n, buf_len-n, ".%.3i [%s] ", ms,
                    sev_to_string(severity));
 

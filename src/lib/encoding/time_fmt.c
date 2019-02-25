@@ -182,10 +182,16 @@ void
 format_rfc1123_time(char *buf, time_t t)
 {
   struct tm tm;
+  size_t len;
 
   tor_gmtime_r(&t, &tm);
 
-  strftime(buf, RFC1123_TIME_LEN+1, "___, %d ___ %Y %H:%M:%S GMT", &tm);
+  len = strftime(buf, RFC1123_TIME_LEN+1, "___, %d ___ %Y %H:%M:%S GMT", &tm);
+  if (len == 0 && buf[0] != '\0') {
+    log_warn(LD_GENERAL, "Couldn't copy the time into the buffer according to the RFC1123 encoding");
+    return;
+  }
+
   tor_assert(tm.tm_wday >= 0);
   tor_assert(tm.tm_wday <= 6);
   memcpy(buf, WEEKDAY_NAMES[tm.tm_wday], 3);
@@ -285,7 +291,13 @@ void
 format_local_iso_time(char *buf, time_t t)
 {
   struct tm tm;
-  strftime(buf, ISO_TIME_LEN+1, "%Y-%m-%d %H:%M:%S", tor_localtime_r(&t, &tm));
+  size_t len;
+
+  len = strftime(buf, ISO_TIME_LEN+1, "%Y-%m-%d %H:%M:%S", tor_localtime_r(&t, &tm));
+  if (len == 0 && buf[0] != '\0') {
+    log_warn(LD_GENERAL, "Couldn't copy the time into the buffer according to the ISO8601 encoding");
+    return;
+  }
 }
 
 /** Set <b>buf</b> to the ISO8601 encoding of the GMT value of <b>t</b>.
@@ -295,7 +307,13 @@ void
 format_iso_time(char *buf, time_t t)
 {
   struct tm tm;
-  strftime(buf, ISO_TIME_LEN+1, "%Y-%m-%d %H:%M:%S", tor_gmtime_r(&t, &tm));
+  size_t len;
+
+  len = strftime(buf, ISO_TIME_LEN+1, "%Y-%m-%d %H:%M:%S", tor_gmtime_r(&t, &tm));
+  if (len == 0 && buf[0] != '\0') {
+    log_warn(LD_GENERAL, "Couldn't copy the GMT time into the buffer according to the ISO8601 encoding");
+    return;
+  }
 }
 
 /** As format_local_iso_time, but use the yyyy-mm-ddThh:mm:ss format to avoid
