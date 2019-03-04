@@ -188,7 +188,7 @@ format_rfc1123_time(char *buf, time_t t)
 
   len = strftime(buf, RFC1123_TIME_LEN+1, "___, %d ___ %Y %H:%M:%S GMT", &tm);
   if (len == 0 && buf[0] != '\0') {
-    log_warn(LD_GENERAL, "Couldn't copy the time into the buffer according to the RFC1123 encoding");
+    tor_assert_nonfatal_unreached();
     return;
   }
 
@@ -295,7 +295,7 @@ format_local_iso_time(char *buf, time_t t)
 
   len = strftime(buf, ISO_TIME_LEN+1, "%Y-%m-%d %H:%M:%S", tor_localtime_r(&t, &tm));
   if (len == 0 && buf[0] != '\0') {
-    log_warn(LD_GENERAL, "Couldn't copy the time into the buffer according to the ISO8601 encoding");
+    tor_assert_nonfatal_unreached();
     return;
   }
 }
@@ -311,7 +311,7 @@ format_iso_time(char *buf, time_t t)
 
   len = strftime(buf, ISO_TIME_LEN+1, "%Y-%m-%d %H:%M:%S", tor_gmtime_r(&t, &tm));
   if (len == 0 && buf[0] != '\0') {
-    log_warn(LD_GENERAL, "Couldn't copy the GMT time into the buffer according to the ISO8601 encoding");
+    tor_assert_nonfatal_unreached();
     return;
   }
 }
